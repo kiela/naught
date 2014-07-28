@@ -376,6 +376,24 @@ MyConsumer.new(null).consume
 # => <null>
 ```
 
+#### Can I avoid hitting nil in a method chain?
+
+Sure thing! Just use a proxy to protect your calls.
+You can even optionally specify what kind of null object to use.
+
+```ruby
+require 'naught'
+
+NullProxy([]).first.address.country.__object__    # => <null>
+NullProxy([1]).first.abs.__object__               # => 1
+
+null = Naught.build do |config|
+  config.define_explicit_conversions
+end
+
+NullProxy([], null).first.abs.__object__.to_i     # => 0
+```
+
 #### Are you done yet?
 
 Just one more thing. For maximum convenience, Naught-generated null

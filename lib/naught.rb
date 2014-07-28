@@ -1,6 +1,7 @@
 require 'naught/version'
 require 'naught/null_class_builder'
 require 'naught/null_class_builder/commands'
+require 'naught/null_proxy'
 
 module Naught
   def self.build(&customization_block)
