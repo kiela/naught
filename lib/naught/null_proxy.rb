@@ -12,12 +12,12 @@ module Naught
 
     def method_missing(method, *args, &block)
       return self if @object.nil?
-      NullProxy.new(@object.send(method, *args, &block), @null_class)
+      NullProxy.new(@object.public_send(method, *args, &block), @null_class)
     end
 
-    def respond_to?(method_name, include_private = false)
-      return true if method_name.to_sym == :__object__
-      @object.respond_to?(method_name, include_private)
+    def respond_to?(method, include_private = false)
+      return true if method.to_sym == :__object__
+      @object.respond_to?(method, include_private)
     end
   end
 end

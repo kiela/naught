@@ -12,6 +12,12 @@ describe Naught::NullProxy do
           expect(proxy.first.odd?.__object__.inspect).to eq '<null>'
         end
       end
+
+      context 'and calling .foo' do
+        it 'raises a no method error' do
+          expect { proxy.foo }.to raise_error(NoMethodError)
+        end
+      end
     end
 
     context 'with object as an array containing the element 1' do
