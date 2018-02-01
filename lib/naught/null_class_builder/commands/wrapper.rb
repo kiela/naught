@@ -21,7 +21,7 @@ module Naught
 
               attr_reader :__wrapped_instance__
 
-              def initialize(instance_to_wrap)
+              def initialize(instance_to_wrap = nil)
                 @__wrapped_instance__ = instance_to_wrap
               end
 
@@ -34,21 +34,25 @@ module Naught
 
           defer do |subject|
             subject.module_exec do
-              inspect_proc = lambda { "<null:#{__wrapped_instance__.inspect}>" }
-              define_method(:inspect, &inspect_proc)
+              define_method(:inspect) do
+                if __wrapped_instance__
+                  "<null:#{__wrapped_instance__.inspect}>"
+                else
+                  "<null>"
+                end
+              end
             end
           end
 
           defer(:prepend => true) do |subject|
             subject.module_exec do
-              original_method_missing = instance_method(:method_missing)
               define_method(:method_missing) do |method_name, *args, &block|
-                if @__wrapped_instance__.respond_to?(method_name)
-                  instance_to_wrap = @__wrapped_instance__.public_send(method_name, *args, &block)
-                  self.class.wrap(instance_to_wrap)
-                else
-                  original_method_missing.bind(self).call(method_name, *args, &block)
-                end
+                instance_to_wrap = if __wrapped_instance__.respond_to?(method_name)
+                                     __wrapped_instance__.public_send(method_name, *args, &block)
+                                   else
+                                     nil
+                                   end
+                self.class.wrap(instance_to_wrap)
               end
             end
           end
